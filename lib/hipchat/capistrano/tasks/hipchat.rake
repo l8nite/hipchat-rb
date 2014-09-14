@@ -63,6 +63,13 @@ namespace :hipchat do
       branch = fetch(:branch)
       real_revision = fetch(:real_revision)
 
+      # cap3 doesn't have real_revision, see if the branch looks like a sha1
+      if branch =~ /\A(([0-9a-f]{40})|([0-9a-f]{6,8}))\z/
+        # TODO: could guess at it... git branch -a| cut -d " " -f 2,3 | xargs -n 1 git rev-parse | grep $sha
+        branch = fetch(:branch_name, nil)
+        real_revision = branch
+      end
+
       name = "#{application}/#{branch}"
       name += " (revision #{real_revision[0..7]})" if real_revision
       name
